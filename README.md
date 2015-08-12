@@ -14,7 +14,7 @@ Getting Started
 
 Requirements
 ------------
-A facility being monitored is a 6 inch thick, rectangular, homogenous soil media with a porosity of 0.25 and 12600 square feet of surface area. A week of soil moisture (m^3 water /m^3 soil media) and precipitation (inches) observations is contained in the file GreenRoofStorms.json. Please develop an algorithm that:
+A facility being monitored is a 6 inch thick, rectangular, homogenous soil media with a porosity of 0.25 and 12600 square feet of surface area. Monitoring is conducted by 4 soil moisture probes installed at evenly-spaced intervals along the centerline of the soil media, and a rain gage mounted adjacent to the facility. A week of soil moisture (m^3 water /m^3 soil media) and precipitation (inches) observations is contained in the file GreenRoofStorms.json. Please develop an algorithm that:
 
 1. Separates individual "instantaneous" precipitation readings (all of the rain that fell since the previous reading, so 5-minute cumulative readings effectively treated as instantaneous readings) into individual storm events.
 2. Identifies the point in time at which each soil moisture sensor appears to have first detected the response to each identified storm event.
