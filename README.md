@@ -1,6 +1,6 @@
 Product-Dev-Test
 =====================
-Test for potential OptiRTC Product developers: raw data analysis.
+Test for potential OptiRTC Product developers.
 
 Welcome
 -------
@@ -22,6 +22,7 @@ A facility being monitored is a 6 inch thick, rectangular, homogenous soil media
 4. Reports these results to the user.
 
 Additionally, the implementation must:
+
 1. Be executable from a command line interface, taking the input data file as an argument.
 
 How you will be evaluated
