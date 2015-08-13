@@ -27,4 +27,4 @@ Additionally, the implementation must:
 
 How you will be evaluated
 -------------------------
-We are looking for concise and readable code that meets the specified Requirements. Where the Requirements are ambiguous or lacking, we are looking to see you make a decision that allows you to move forward without compromising the basic functionality of the application (hint: we want to talk to you about how you made these decisions during the in-person interview). We are expecting this task to take you 30 minutes to 3 hours; please do not spend more than 5 hours on this task.
+We are looking for concise and readable code that meets the specified Requirements, while demonstrating familiarity with working with sensor data from the stormwater management domain. Where the Requirements are ambiguous or lacking, we are looking to see you make a decision that allows you to move forward without compromising the basic functionality of the application (hint: we want to talk to you about how you made these decisions during the in-person interview). We are expecting this task to take you 30 minutes to 3 hours; please do not spend more than 5 hours on this task.
