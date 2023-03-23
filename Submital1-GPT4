@@ -1,0 +1,106 @@
+import sys
+import json
+from datetime import datetime, timedelta
+
+def read_data(file_name):
+    with open(file_name, "r") as file:
+        data = json.load(file)
+    return data
+
+def separate_storm_events(data, threshold=0.1, time_gap=timedelta(minutes=30)):
+    storm_events = []
+    current_storm = []
+
+    for entry in data:
+        timestamp = datetime.fromisoformat(entry["timeValue_UTC"])
+        precipitation = entry["Rain_in"]
+
+        if current_storm and timestamp - current_storm[-1]["timestamp"] > time_gap:
+            storm_events.append(current_storm)
+            current_storm = []
+
+        if precipitation >= threshold:
+            current_storm.append({"timestamp": timestamp, "precipitation": precipitation})
+
+    if current_storm:
+        storm_events.append(current_storm)
+
+    return storm_events
+
+def find_response_times(data, storm_events):
+    response_times = []
+    sensor_keys = [
+        "NorthCentralSoilMoisture_m3_per_m3",
+        "SouthCentralSoilMoisture_m3_per_m3",
+        "NorthSoilMoisture_m3_per_m3",
+        "SouthSoilMoisture_m3_per_m3",
+    ]
+
+    for storm_event in storm_events:
+        start_time = storm_event[0]["timestamp"]
+        response_time = [None] * 4
+
+        for entry in data:
+            timestamp = datetime.fromisoformat(entry["timeValue_UTC"])
+            if timestamp >= start_time:
+                for i, key in enumerate(sensor_keys):
+                    if response_time[i] is None and entry[key] > 0:
+                        response_time[i] = timestamp
+                        if all(response_time):
+                            break
+
+        response_times.append(response_time)
+
+    return response_times
+
+def compute_stored_water_content(storm_events, response_times, time_window=timedelta(minutes=15)):
+    stored_water_content = []
+
+    for event_idx, storm_event in enumerate(storm_events):
+        water_content_changes = []
+        start_time = storm_event[0]["timestamp"]
+        end_time = storm_event[-1]["timestamp"]
+        current_time = start_time
+
+        while current_time <= end_time:
+            current_window = [entry for entry in storm_event if current_time <= entry["timestamp"] < current_time + time_window]
+            if current_window:
+                window_start = current_window[0]["precipitation"]
+                window_end = current_window[-1]["precipitation"]
+                change = window_end - window_start
+            else:
+                change = 0
+
+            water_content_changes.append(change)
+            current_time += time_window
+
+        stored_water_content.append(water_content_changes)
+
+    return stored_water_content
+
+def report_results(storm_events, response_times, stored_water_content):
+    for i, (event, response_time, water_content_changes) in enumerate(zip(storm_events, response_times, stored_water_content)):
+        print(f"Storm event {i + 1}:")
+        print(f"  Start time: {event[0]['timestamp']}")
+        print(f"  End time: {event[-1]['timestamp']}")
+        print("  Response times:")
+        for j, rt in enumerate(response_time):
+            print(f"    Sensor {j + 1}: {rt}")
+        print("  Stored water content changes:")
+        for j, change in enumerate(water_content_changes):
+            print(f"    {j * 15}-{(j + 1) * 15} minutes: {change:.2f}")
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python script.py <input_file>")
+        sys.exit(1)
+
+    file_name = sys.argv[1]
+    data = read_data(file_name)
+    storm_events = separate_storm_events(data)
+    response_times = find_response_times(data, storm_events)
+    stored_water_content = compute_stored_water_content(storm_events, response_times)
+    report_results(storm_events, response_times, stored_water_content)
+
+if __name__ == "__main__":
+    main()
